@@ -4,53 +4,32 @@ import Image from 'next/image'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useRef } from 'react'
 
-// Animated steam particle
-function SteamParticle({ left, delay, duration }: { left: string; delay: number; duration: number }) {
+function CloudOutline({ className }: { className?: string }) {
   return (
-    <motion.div
-      className="absolute bottom-0 pointer-events-none"
-      style={{ left }}
-      initial={{ y: 0, opacity: 0, scaleX: 1 }}
-      animate={{
-        y: [-10, -120, -200],
-        opacity: [0, 0.5, 0],
-        scaleX: [0.8, 1.4, 0.6],
-      }}
-      transition={{
-        duration,
-        delay,
-        repeat: Infinity,
-        ease: 'easeOut',
-      }}
-    >
-      <div
-        className="w-3 rounded-full blur-sm"
-        style={{
-          height: '60px',
-          background: 'linear-gradient(to top, rgba(135,193,232,0.4), transparent)',
-        }}
-      />
-    </motion.div>
+    <svg viewBox="0 0 400 240" className={className} aria-hidden="true" fill="none">
+      <ellipse cx="200" cy="160" rx="185" ry="72" fill="rgba(135,193,232,0.04)" stroke="rgba(135,193,232,0.18)" strokeWidth="1.5" />
+      <ellipse cx="138" cy="128" rx="105" ry="82" fill="rgba(135,193,232,0.05)" stroke="rgba(135,193,232,0.15)" strokeWidth="1.5" />
+      <ellipse cx="268" cy="118" rx="112" ry="88" fill="rgba(135,193,232,0.05)" stroke="rgba(135,193,232,0.15)" strokeWidth="1.5" />
+      <ellipse cx="200" cy="100" rx="92" ry="76" fill="rgba(135,193,232,0.06)" stroke="rgba(135,193,232,0.2)" strokeWidth="1.5" />
+    </svg>
   )
 }
 
-// Coffee cup SVG decoration
-function CoffeeCupDecor({ className }: { className?: string }) {
+function WaveDivider() {
   return (
-    <svg viewBox="0 0 80 90" className={className} fill="none" aria-hidden="true">
-      {/* Cup body */}
-      <path d="M12 25 L20 75 Q40 82 60 75 L68 25 Z" fill="rgba(135,193,232,0.12)" stroke="rgba(135,193,232,0.3)" strokeWidth="1.5" />
-      {/* Cup rim */}
-      <ellipse cx="40" cy="25" rx="28" ry="6" fill="rgba(135,193,232,0.08)" stroke="rgba(135,193,232,0.3)" strokeWidth="1.5" />
-      {/* Handle */}
-      <path d="M68 35 Q85 35 85 50 Q85 65 68 65" stroke="rgba(135,193,232,0.3)" strokeWidth="1.5" fill="none" />
-      {/* Saucer */}
-      <ellipse cx="40" cy="78" rx="35" ry="7" fill="rgba(135,193,232,0.08)" stroke="rgba(135,193,232,0.25)" strokeWidth="1" />
-      {/* Steam lines */}
-      <path d="M30 18 Q28 10 32 4 Q36 -2 34 -10" stroke="rgba(135,193,232,0.4)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-      <path d="M40 15 Q38 6 42 0 Q46 -6 44 -14" stroke="rgba(135,193,232,0.3)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-      <path d="M50 18 Q48 10 52 4 Q56 -2 54 -10" stroke="rgba(135,193,232,0.4)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-    </svg>
+    <div className="absolute bottom-0 left-0 right-0 z-20 pointer-events-none">
+      <svg
+        viewBox="0 0 1440 90"
+        preserveAspectRatio="none"
+        className="w-full block"
+        style={{ height: 'clamp(40px, 5vw, 90px)' }}
+      >
+        <path
+          d="M0,90 L0,45 Q240,0 480,45 Q720,90 960,45 Q1200,0 1440,45 L1440,90 Z"
+          fill="#070D14"
+        />
+      </svg>
+    </div>
   )
 }
 
@@ -66,29 +45,24 @@ export default function Hero({ onOrderClick }: HeroProps) {
     offset: ['start start', 'end start'],
   })
 
-  // Parallax: image moves up slower than scroll
-  const imageY = useTransform(scrollYProgress, [0, 1], ['0%', '30%'])
-  // Subtle scale effect
-  const imageScale = useTransform(scrollYProgress, [0, 1], [1, 1.08])
-  // Content fades and lifts on scroll
-  const contentY = useTransform(scrollYProgress, [0, 0.6], ['0%', '-20%'])
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
-
-  const headline = ['K', 'u', 'm', 'o', '\u00A0', 'C', 'r', 'e', 'p', 'e']
+  const imageY     = useTransform(scrollYProgress, [0, 1], ['0%', '28%'])
+  const imageScale = useTransform(scrollYProgress, [0, 1], [1, 1.1])
+  const contentY   = useTransform(scrollYProgress, [0, 0.7], ['0%', '-14%'])
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.55], [1, 0])
 
   return (
     <section
       ref={containerRef}
-      className="relative h-screen min-h-[700px] flex items-center justify-center overflow-hidden"
+      className="relative h-screen min-h-[600px] overflow-hidden"
     >
-      {/* Parallax background */}
+      {/* ─── Parallax Background ─────────────────────────────── */}
       <motion.div
         className="absolute inset-0 z-0"
         style={{ y: imageY, scale: imageScale }}
       >
         <Image
           src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=1920&q=85"
-          alt="Kumo Crepe cozy cafe interior"
+          alt="Kumo Crepe cafe interior"
           fill
           priority
           quality={85}
@@ -97,158 +71,136 @@ export default function Hero({ onOrderClick }: HeroProps) {
         />
       </motion.div>
 
-      {/* Layered overlays for depth */}
-      <div className="absolute inset-0 z-10 bg-kumo-bg/50" />
-      <div className="absolute inset-0 z-10 bg-linear-to-b from-kumo-bg/80 via-transparent to-kumo-bg" />
-      <div className="absolute inset-0 z-10 bg-linear-to-r from-kumo-bg/40 via-transparent to-kumo-bg/40" />
+      {/* ─── Atmospheric Overlays ────────────────────────────── */}
+      <div className="absolute inset-0 z-10 bg-kumo-bg/55" />
+      <div className="absolute inset-0 z-10 bg-linear-to-b from-kumo-bg/75 via-transparent to-kumo-bg" />
+      {/* Left vignette so left-aligned text is legible */}
+      <div className="absolute inset-0 z-10 bg-linear-to-r from-kumo-bg/80 via-kumo-bg/30 to-transparent" />
 
-      {/* Steam particles rising from bottom */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 h-48 pointer-events-none">
-        {[
-          { left: '15%',  delay: 0,   duration: 4.5 },
-          { left: '28%',  delay: 1.2, duration: 5 },
-          { left: '42%',  delay: 0.6, duration: 4 },
-          { left: '57%',  delay: 2,   duration: 5.5 },
-          { left: '70%',  delay: 0.3, duration: 4.2 },
-          { left: '83%',  delay: 1.7, duration: 4.8 },
-        ].map((p) => (
-          <SteamParticle key={p.left} {...p} />
-        ))}
-      </div>
-
-      {/* Floating coffee cup — top right */}
+      {/* ─── Cloud Decoration — upper right (desktop only) ───── */}
       <motion.div
-        className="absolute top-24 right-8 md:right-20 z-20"
-        animate={{ y: [0, -12, 0], rotate: [-2, 2, -2] }}
-        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute top-8 right-0 z-20 hidden md:block w-[42vw] max-w-[560px]"
+        initial={{ opacity: 0, x: 60 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 1.4, delay: 0.8 }}
       >
-        <CoffeeCupDecor className="w-16 md:w-24 opacity-60" />
-      </motion.div>
-
-      {/* Floating coffee cup — left */}
-      <motion.div
-        className="absolute bottom-32 left-8 md:left-20 z-20"
-        animate={{ y: [0, 14, 0], rotate: [2, -2, 2] }}
-        transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-      >
-        <CoffeeCupDecor className="w-12 md:w-16 opacity-40" />
-      </motion.div>
-
-      {/* Hero content */}
-      <motion.div
-        style={{ y: contentY, opacity: contentOpacity }}
-        className="relative z-30 text-center px-4 max-w-5xl mx-auto"
-      >
-        {/* Eyebrow */}
-        <motion.p
-          initial={{ opacity: 0, letterSpacing: '0.1em' }}
-          animate={{ opacity: 1, letterSpacing: '0.35em' }}
-          transition={{ duration: 1.2, delay: 0.3 }}
-          className="text-kumo-blue text-xs md:text-sm uppercase mb-8 font-body tracking-[0.35em]"
-        >
-          French-Inspired · San Marcos, TX
-        </motion.p>
-
-        {/* Letter-by-letter headline */}
-        <h1 className="font-display text-6xl sm:text-8xl lg:text-[8rem] font-light text-kumo-cream leading-[0.85] mb-6 flex flex-wrap justify-center gap-x-0">
-          {headline.map((char, i) => (
-            <motion.span
-              key={i}
-              initial={{ opacity: 0, y: 60, rotateX: -90 }}
-              animate={{ opacity: 1, y: 0, rotateX: 0 }}
-              transition={{
-                duration: 0.7,
-                delay: 0.5 + i * 0.07,
-                type: 'spring',
-                stiffness: 100,
-                damping: 15,
-              }}
-              style={
-                i >= 5
-                  ? {
-                      background: 'linear-gradient(135deg, #B8D9F0, #F0F6FC, #87C1E8)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
-                      fontStyle: 'italic',
-                    }
-                  : undefined
-              }
-            >
-              {char}
-            </motion.span>
-          ))}
-        </h1>
-
-        {/* Tagline with underline reveal */}
-        <div className="relative inline-block mb-4">
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.3 }}
-            className="font-display italic text-2xl md:text-3xl text-kumo-muted"
-          >
-            crepe with a soul
-          </motion.p>
-          <motion.div
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            transition={{ duration: 0.8, delay: 1.8, ease: 'easeOut' }}
-            className="absolute -bottom-1 left-0 right-0 h-px bg-linear-to-r from-transparent via-kumo-blue to-transparent origin-left"
-          />
-        </div>
-
-        {/* Subtext */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 1.6 }}
-          className="text-kumo-muted text-base md:text-lg max-w-md mx-auto mb-12 font-body"
-        >
-          Artisanal crepes and specialty beverages, crafted with love in the heart of San Marcos.
-        </motion.p>
-
-        {/* CTAs */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.9 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center"
+          animate={{ y: [0, -18, 0] }}
+          transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
         >
-          <motion.button
-            whileHover={{ scale: 1.06, boxShadow: '0 0 30px rgba(135,193,232,0.4)' }}
-            whileTap={{ scale: 0.97 }}
-            onClick={onOrderClick}
-            className="px-9 py-4 bg-kumo-blue text-kumo-bg font-semibold rounded-full text-lg shadow-lg shadow-kumo-blue/30 hover:bg-kumo-blue-light transition-colors duration-200 cursor-pointer"
-          >
-            Order Online
-          </motion.button>
-          <motion.a
-            href="#menu"
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.97 }}
-            className="px-9 py-4 border border-kumo-blue/40 text-kumo-cream font-semibold rounded-full text-lg hover:border-kumo-blue hover:text-kumo-blue transition-all duration-200"
-          >
-            Explore Menu
-          </motion.a>
+          <CloudOutline className="w-full" />
         </motion.div>
       </motion.div>
 
-      {/* Scroll indicator */}
+      {/* ─── Hero Content ────────────────────────────────────── */}
+      <motion.div
+        style={{ y: contentY, opacity: contentOpacity }}
+        className="relative z-30 absolute inset-0 flex flex-col justify-center md:justify-end px-6 sm:px-10 md:px-16 lg:px-24 pt-20 pb-10 md:pt-0 md:pb-28"
+      >
+        {/* Eyebrow */}
+        <motion.div
+          className="flex items-center gap-3 mb-6"
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+        >
+          <div className="w-6 h-px bg-kumo-blue/50 shrink-0" />
+          <p className="text-kumo-blue text-[10px] uppercase font-body tracking-[0.25em] whitespace-nowrap">
+            French-Inspired · San Marcos, TX
+          </p>
+        </motion.div>
+
+        {/* Stacked massive heading — editorial */}
+        <div className="mb-8 md:mb-10 overflow-hidden">
+          <div className="overflow-hidden">
+            <motion.h1
+              className="font-display font-light text-kumo-cream leading-[0.85] block"
+              style={{ fontSize: 'clamp(3.5rem, 16vw, 16rem)' }}
+              initial={{ y: '105%' }}
+              animate={{ y: 0 }}
+              transition={{ duration: 1, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            >
+              Kumo
+            </motion.h1>
+          </div>
+          <div className="overflow-hidden">
+            <motion.span
+              className="font-display font-light italic block text-kumo-blue leading-[0.85]"
+              style={{ fontSize: 'clamp(3.5rem, 16vw, 16rem)' }}
+              initial={{ y: '105%' }}
+              animate={{ y: 0 }}
+              transition={{ duration: 1, delay: 0.72, ease: [0.22, 1, 0.36, 1] }}
+            >
+              Crepe
+            </motion.span>
+          </div>
+        </div>
+
+        {/* Tagline + CTAs row */}
+        <div className="flex flex-col sm:flex-row sm:items-end gap-6 sm:gap-16">
+          {/* Left: tagline + description */}
+          <motion.div
+            className="max-w-xs"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 1.25 }}
+          >
+            <p className="font-display italic text-xl md:text-2xl text-kumo-cream/80 mb-3">
+              crepe with a soul
+            </p>
+            <div className="w-10 h-px bg-kumo-blue/40 mb-3" />
+            <p className="text-kumo-muted text-sm font-body leading-relaxed">
+              Artisanal crepes and specialty beverages, crafted with love in the heart of San Marcos.
+            </p>
+          </motion.div>
+
+          {/* Right: CTAs */}
+          <motion.div
+            className="flex flex-row gap-3 shrink-0"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 1.45 }}
+          >
+            <motion.button
+              whileHover={{ scale: 1.05, boxShadow: '0 0 28px rgba(135,193,232,0.35)' }}
+              whileTap={{ scale: 0.97 }}
+              onClick={onOrderClick}
+              className="px-8 py-3.5 bg-kumo-blue text-kumo-bg font-semibold rounded-full text-sm md:text-base shadow-lg shadow-kumo-blue/25 hover:bg-kumo-blue-light transition-colors duration-200 cursor-pointer font-body whitespace-nowrap"
+            >
+              Order Online
+            </motion.button>
+            <motion.a
+              href="#menu"
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.97 }}
+              className="px-8 py-3.5 border border-kumo-blue/40 text-kumo-cream font-semibold rounded-full text-sm md:text-base hover:border-kumo-blue hover:text-kumo-blue transition-all duration-200 font-body whitespace-nowrap"
+            >
+              Explore Menu
+            </motion.a>
+          </motion.div>
+        </div>
+      </motion.div>
+
+      {/* ─── Vertical scroll hint — right edge ───────────────── */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 2.4 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2"
+        transition={{ delay: 2 }}
+        className="absolute right-6 md:right-8 bottom-28 z-30 flex flex-col items-center gap-3 hidden md:flex"
       >
         <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
-          className="w-5 h-8 rounded-full border border-kumo-blue/40 flex items-start justify-center pt-1.5"
-        >
-          <div className="w-1 h-2 bg-kumo-blue rounded-full" />
-        </motion.div>
+          animate={{ scaleY: [0.4, 1, 0.4] }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+          className="w-px h-16 bg-linear-to-b from-transparent via-kumo-blue/50 to-transparent origin-top"
+        />
+        <p className="text-kumo-muted text-[9px] tracking-[0.35em] uppercase font-body"
+           style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}>
+          Scroll
+        </p>
       </motion.div>
+
+      {/* ─── Wave Divider ─────────────────────────────────────── */}
+      <WaveDivider />
     </section>
   )
 }

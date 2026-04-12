@@ -76,19 +76,16 @@ body {
 ::-webkit-scrollbar-track { background: #070D14; }
 ::-webkit-scrollbar-thumb { background: #87C1E8; border-radius: 2px; }
 
-/* 3D flip card — pure CSS, required for Safari */
-.flip-card-inner {
-  transform-style: preserve-3d;
-  transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+/* Hide scrollbar — used for horizontal scroll tracks */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
-.flip-card:hover .flip-card-inner {
-  transform: rotateY(180deg);
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
-.flip-card-front,
-.flip-card-back {
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-}
-.flip-card-back {
-  transform: rotateY(180deg);
+
+/* Image scale utility for menu cards hover */
+.group:hover .group-hover\:scale-108 {
+  transform: scale(1.08);
 }
