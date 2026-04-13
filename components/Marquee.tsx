@@ -1,6 +1,5 @@
 'use client'
 
-// Infinite scrolling ticker — pure CSS, no JS
 const items = [
   '☕  Kumo Cloud Latte',
   '✦  Strawberry Dream Crepe',
@@ -8,38 +7,40 @@ const items = [
   '✦  Paris Morning Crepe',
   '☕  Caramel Cascade',
   '✦  Bananas Foster Crepe',
-  '☕  Specialty Drinks',
-  '✦  Fresh Daily',
+  '☕  Made Fresh Daily',
+  '✦  San Marcos, TX',
 ]
 
 interface MarqueeProps {
   reverse?: boolean
   className?: string
+  /** 'dark' = #0D1521 (default), 'bg' = #070D14 */
+  bg?: 'dark' | 'bg'
 }
 
-export default function Marquee({ reverse = false, className = '' }: MarqueeProps) {
-  const track = [...items, ...items] // doubled for seamless loop
+export default function Marquee({ reverse = false, className = '', bg = 'dark' }: MarqueeProps) {
+  const track = [...items, ...items]
+  const bgClass   = bg === 'bg' ? 'bg-kumo-bg'   : 'bg-kumo-dark'
+  const fadeFrom  = bg === 'bg' ? 'from-kumo-bg'  : 'from-kumo-dark'
 
   return (
-    <div className={`relative overflow-hidden py-4 border-y border-kumo-blue/10 bg-kumo-dark/50 ${className}`}>
+    <div className={`relative overflow-hidden py-4 ${bgClass} ${className}`}>
       {/* Fade edges */}
-      <div className="absolute inset-y-0 left-0 w-24 z-10 bg-linear-to-r from-kumo-dark to-transparent pointer-events-none" />
-      <div className="absolute inset-y-0 right-0 w-24 z-10 bg-linear-to-l from-kumo-dark to-transparent pointer-events-none" />
+      <div className={`absolute inset-y-0 left-0 w-20 z-10 bg-linear-to-r ${fadeFrom} to-transparent pointer-events-none`} />
+      <div className={`absolute inset-y-0 right-0 w-20 z-10 bg-linear-to-l ${fadeFrom} to-transparent pointer-events-none`} />
 
       <div
         className="flex gap-0 whitespace-nowrap"
         style={{
           animationName: reverse ? 'marquee-reverse' : 'marquee',
-          animationDuration: '30s',
+          animationDuration: '32s',
           animationTimingFunction: 'linear',
           animationIterationCount: 'infinite',
         }}
       >
         {track.map((item, i) => (
-          <span
-            key={i}
-            className="inline-flex items-center gap-3 px-8 text-sm font-body tracking-widest uppercase"
-          >
+          <span key={i} className="inline-flex items-center gap-2 px-7 text-xs font-body tracking-[0.25em] uppercase">
+            <span className="text-kumo-blue/60">·</span>
             <span className="text-kumo-blue/80">{item}</span>
           </span>
         ))}

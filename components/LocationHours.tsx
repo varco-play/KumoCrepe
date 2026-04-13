@@ -24,7 +24,7 @@ const slideRight = {
 
 export default function LocationHours() {
   return (
-    <section id="location" className="py-24 md:py-36 bg-kumo-dark">
+    <section id="location" className="bg-kumo-bg pt-24 md:pt-36 pb-24 md:pb-36 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
@@ -136,6 +136,7 @@ export default function LocationHours() {
           </motion.div>
         </div>
       </div>
+
     </section>
   )
 }

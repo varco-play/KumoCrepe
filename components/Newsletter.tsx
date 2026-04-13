@@ -16,7 +16,7 @@ export default function Newsletter() {
   }
 
   return (
-    <section className="relative py-24 md:py-36 overflow-hidden bg-kumo-bg">
+    <section className="relative py-24 md:py-36 overflow-hidden bg-kumo-dark">
       {/* Animated gradient background */}
       <div
         className="absolute inset-0 animate-gradient-shift"

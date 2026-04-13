@@ -11,6 +11,9 @@
   --color-kumo-cream:      #F0F6FC;
   --color-kumo-text:       #D6E8F5;
   --color-kumo-muted:      #7A9BB5;
+  /* Warm light sections — Parisian parchment */
+  --color-kumo-parchment:  #F5EFE4;
+  --color-kumo-ink:        #1C130A;
 
   /* Fonts */
   --font-display: var(--font-cormorant), Georgia, serif;

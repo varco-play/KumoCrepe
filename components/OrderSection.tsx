@@ -9,7 +9,7 @@ interface OrderSectionProps {
 
 export default function OrderSection({ onOrderClick }: OrderSectionProps) {
   return (
-    <section className="py-20 md:py-28 bg-kumo-bg relative overflow-hidden">
+    <section className="bg-kumo-dark relative overflow-hidden pt-20 md:pt-28 pb-20 md:pb-28">
       {/* Animated gradient background */}
       <div
         className="absolute inset-0 animate-gradient-shift"
@@ -63,6 +63,7 @@ export default function OrderSection({ onOrderClick }: OrderSectionProps) {
           </p>
         </motion.div>
       </div>
+
     </section>
   )
 }
