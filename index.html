@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kumo Crepe — Crepe with a Soul</title>
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@300;400;600;700;900&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── RESET & BASE ─────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --sky:       #7EC8E3;
+      --sky-light: #B8DFF0;
+      --sky-pale:  #E8F6FC;
+      --navy:      #1A2744;
+      --navy-mid:  #2D3E6B;
+      --cream:     #F7F3EE;
+      --cream-dark:#EDE6DA;
+      --peach:     #E8A87C;
+      --peach-dark:#D4875A;
+      --white:     #FFFFFF;
+      --text-muted:#6B7A99;
+
+      --font-heading: 'League Spartan', sans-serif;
+      --font-body:    'Montserrat', sans-serif;
+      --font-light:   'Open Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--cream);
+      color: var(--navy);
+      overflow-x: hidden;
+    }
+
+    /* ─── CUSTOM SCROLLBAR ──────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--cream); }
+    ::-webkit-scrollbar-thumb { background: var(--sky); border-radius: 3px; }
+
+    /* ─── LOADER ────────────────────────────────────────── */
+    #loader {
+      position: fixed; inset: 0;
+      background: var(--navy);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+    #loader.hidden { opacity: 0; visibility: hidden; }
+
+    .loader-cloud {
+      position: relative;
+      animation: loaderPulse 1.2s ease-in-out infinite;
+    }
+    .loader-cloud svg { width: 120px; height: 80px; }
+    .loader-cloud .loader-text {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      font-family: var(--font-heading);
+      font-weight: 900; font-size: 18px;
+      color: var(--navy); letter-spacing: 2px;
+      line-height: 1.2;
+    }
+    .loader-cloud .loader-sub {
+      font-size: 8px; font-weight: 300;
+      font-style: italic; letter-spacing: 1px;
+    }
+    @keyframes loaderPulse {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.08); }
+    }
+
+    /* ─── NAV ───────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 20px 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background 0.5s ease, padding 0.5s ease, box-shadow 0.5s ease;
+    }
+    nav.scrolled {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px);
+      padding: 14px 60px;
+      box-shadow: 0 2px 40px rgba(26,39,68,0.08);
+    }
+
+    .nav-logo {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none;
+    }
+    .nav-logo-cloud { width: 52px; height: auto; }
+    .nav-logo-text {
+      display: flex; flex-direction: column;
+      line-height: 1.1;
+    }
+    .nav-logo-text span:first-child {
+      font-family: var(--font-heading);
+      font-weight: 900; font-size: 20px;
+      color: var(--navy); letter-spacing: 1px;
+    }
+    .nav-logo-text span:last-child {
+      font-size: 10px; font-style: italic;
+      color: var(--text-muted); letter-spacing: 0.5px;
+    }
+    nav.scrolled .nav-logo-text span:first-child { color: var(--navy); }
+
+    .nav-links {
+      display: flex; align-items: center; gap: 40px;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-family: var(--font-heading);
+      font-weight: 600; font-size: 13px;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--white);
+      position: relative; transition: color 0.3s;
+    }
+    nav.scrolled .nav-links a { color: var(--navy); }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 2px;
+      background: var(--sky); transition: width 0.3s ease;
+    }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-links a:hover { color: var(--sky); }
+    nav.scrolled .nav-links a:hover { color: var(--sky); }
+
+    .nav-cta {
+      background: var(--peach);
+      color: var(--white) !important;
+      padding: 10px 24px;
+      border-radius: 50px;
+      transition: background 0.3s, transform 0.3s !important;
+    }
+    .nav-cta::after { display: none !important; }
+    .nav-cta:hover {
+      background: var(--peach-dark) !important;
+      transform: translateY(-2px);
+      color: var(--white) !important;
+    }
+
+    /* ─── HERO ──────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, #1a3a5c 100%);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+
+    /* Floating cloud bg shapes */
+    .hero-cloud-bg {
+      position: absolute; border-radius: 50%;
+      background: rgba(126,200,227,0.06);
+      animation: floatCloud linear infinite;
+    }
+    .hc1 { width: 400px; height: 250px; top: 10%; left: -80px; animation-duration: 25s; }
+    .hc2 { width: 300px; height: 180px; top: 60%; right: -60px; animation-duration: 32s; animation-delay: -8s; }
+    .hc3 { width: 200px; height: 120px; top: 30%; right: 15%; animation-duration: 20s; animation-delay: -4s; }
+    .hc4 { width: 500px; height: 300px; bottom: -100px; left: 20%; animation-duration: 40s; animation-delay: -15s; opacity: 0.04; }
+
+    @keyframes floatCloud {
+      0%   { transform: translateX(0) translateY(0) rotate(0deg); }
+      33%  { transform: translateX(30px) translateY(-20px) rotate(1deg); }
+      66%  { transform: translateX(-20px) translateY(10px) rotate(-1deg); }
+      100% { transform: translateX(0) translateY(0) rotate(0deg); }
+    }
+
+    /* Particles */
+    .particles { position: absolute; inset: 0; pointer-events: none; }
+    .particle {
+      position: absolute; width: 3px; height: 3px;
+      background: var(--sky-light); border-radius: 50%;
+      opacity: 0; animation: particleFloat linear infinite;
+    }
+    @keyframes particleFloat {
+      0%   { transform: translateY(100vh) translateX(0); opacity: 0; }
+      10%  { opacity: 0.6; }
+      90%  { opacity: 0.4; }
+      100% { transform: translateY(-100px) translateX(60px); opacity: 0; }
+    }
+
+    .hero-content {
+      position: relative; z-index: 2;
+      text-align: center; padding: 0 20px;
+      max-width: 900px;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 12px;
+      font-family: var(--font-light);
+      font-size: 12px; letter-spacing: 4px; text-transform: uppercase;
+      color: var(--sky); margin-bottom: 28px;
+      opacity: 0; transform: translateY(30px);
+      animation: fadeUp 0.9s ease forwards 0.3s;
+    }
+    .hero-eyebrow::before,
+    .hero-eyebrow::after {
+      content: ''; width: 30px; height: 1px; background: var(--sky); opacity: 0.5;
+    }
+
+    .hero-title {
+      font-family: var(--font-heading);
+      font-weight: 900; font-size: clamp(56px, 9vw, 120px);
+      color: var(--white); line-height: 0.9;
+      letter-spacing: -2px; text-transform: uppercase;
+      opacity: 0; transform: translateY(40px);
+      animation: fadeUp 1s ease forwards 0.5s;
+    }
+    .hero-title .sky-word { color: var(--sky); display: block; }
+
+    .hero-sub {
+      margin-top: 24px;
+      font-size: clamp(14px, 2vw, 18px);
+      color: rgba(255,255,255,0.65);
+      font-weight: 300; letter-spacing: 0.5px; line-height: 1.7;
+      opacity: 0; transform: translateY(30px);
+      animation: fadeUp 1s ease forwards 0.8s;
+    }
+
+    .hero-actions {
+      margin-top: 48px;
+      display: flex; align-items: center; justify-content: center; gap: 20px;
+      opacity: 0; transform: translateY(30px);
+      animation: fadeUp 1s ease forwards 1s;
+    }
+
+    .btn-primary {
+      background: var(--peach);
+      color: var(--white);
+      padding: 16px 40px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-family: var(--font-heading);
+      font-weight: 700; font-size: 14px;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+      box-shadow: 0 8px 30px rgba(232,168,124,0.4);
+    }
+    .btn-primary:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(232,168,124,0.5);
+      background: var(--peach-dark);
+    }
+
+    .btn-outline {
+      color: var(--white);
+      padding: 16px 40px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-family: var(--font-heading);
+      font-weight: 600; font-size: 14px;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      border: 1.5px solid rgba(255,255,255,0.3);
+      transition: transform 0.3s, border-color 0.3s, background 0.3s;
+    }
+    .btn-outline:hover {
+      transform: translateY(-4px);
+      border-color: var(--sky);
+      background: rgba(126,200,227,0.1);
+    }
+
+    .hero-scroll-hint {
+      position: absolute; bottom: 40px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      opacity: 0; animation: fadeUp 1s ease forwards 1.4s;
+    }
+    .hero-scroll-hint span {
+      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+      color: rgba(255,255,255,0.4); font-family: var(--font-light);
+    }
+    .scroll-line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, rgba(126,200,227,0.6), transparent);
+      animation: scrollLine 2s ease-in-out infinite;
+    }
+    @keyframes scrollLine {
+      0%, 100% { transform: scaleY(1); opacity: 1; }
+      50%       { transform: scaleY(0.5); opacity: 0.4; }
+    }
+
+    /* Hero large cloud deco */
+    .hero-cloud-deco {
+      position: absolute; bottom: -30px; right: -60px;
+      opacity: 0.07;
+      animation: floatSlow 8s ease-in-out infinite;
+    }
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-20px); }
+    }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── SECTION UTILITIES ─────────────────────────────── */
+    section { position: relative; overflow: hidden; }
+
+    .section-eyebrow {
+      display: inline-flex; align-items: center; gap: 14px;
+      font-family: var(--font-light);
+      font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
+      color: var(--sky); margin-bottom: 16px;
+    }
+    .section-eyebrow::before {
+      content: ''; width: 24px; height: 1px; background: var(--sky);
+    }
+
+    .section-title {
+      font-family: var(--font-heading);
+      font-weight: 900; font-size: clamp(40px, 6vw, 80px);
+      line-height: 0.95; letter-spacing: -1px; text-transform: uppercase;
+    }
+
+    /* Reveal animations via IntersectionObserver */
+    .reveal {
+      opacity: 0; transform: translateY(60px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-left {
+      opacity: 0; transform: translateX(-60px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .reveal-left.visible { opacity: 1; transform: translateX(0); }
+    .reveal-right {
+      opacity: 0; transform: translateX(60px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .reveal-right.visible { opacity: 1; transform: translateX(0); }
+    .reveal-scale {
+      opacity: 0; transform: scale(0.85);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .reveal-scale.visible { opacity: 1; transform: scale(1); }
+
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.2s; }
+    .delay-3 { transition-delay: 0.3s; }
+    .delay-4 { transition-delay: 0.4s; }
+    .delay-5 { transition-delay: 0.5s; }
+    .delay-6 { transition-delay: 0.6s; }
+
+    /* ─── MARQUEE STRIP ─────────────────────────────────── */
+    .marquee-strip {
+      background: var(--sky);
+      padding: 16px 0; overflow: hidden;
+      display: flex; align-items: center;
+    }
+    .marquee-track {
+      display: flex; gap: 0;
+      animation: marquee 20s linear infinite;
+      white-space: nowrap;
+    }
+    .marquee-item {
+      display: inline-flex; align-items: center; gap: 20px;
+      padding: 0 32px;
+      font-family: var(--font-heading);
+      font-weight: 700; font-size: 13px;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--navy);
+    }
+    .marquee-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--navy); opacity: 0.4; flex-shrink: 0;
+    }
+    @keyframes marquee {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ─── ABOUT ─────────────────────────────────────────── */
+    #about {
+      background: var(--cream);
+      padding: 140px 60px;
+    }
+    .about-grid {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 100px; align-items: center;
+    }
+    .about-image-wrap {
+      position: relative;
+    }
+    .about-img-main {
+      width: 100%; border-radius: 24px;
+      object-fit: cover; height: 560px;
+      display: block;
+      box-shadow: 0 30px 80px rgba(26,39,68,0.15);
+    }
+    .about-img-float {
+      position: absolute; bottom: -40px; right: -40px;
+      width: 200px; height: 200px;
+      border-radius: 20px; object-fit: cover;
+      border: 6px solid var(--white);
+      box-shadow: 0 20px 50px rgba(26,39,68,0.2);
+    }
+    .about-badge {
+      position: absolute; top: 30px; right: -20px;
+      background: var(--sky);
+      color: var(--navy);
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      font-family: var(--font-heading);
+      box-shadow: 0 10px 30px rgba(126,200,227,0.4);
+      animation: spinBadge 12s linear infinite;
+    }
+    .about-badge-num {
+      font-size: 32px; font-weight: 900; line-height: 1;
+    }
+    .about-badge-txt {
+      font-size: 9px; letter-spacing: 1px; text-transform: uppercase; font-weight: 600;
+    }
+    @keyframes spinBadge {
+      0%   { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .about-text .section-title { color: var(--navy); }
+    .about-text .section-title span { color: var(--sky); }
+
+    .about-body {
+      margin-top: 28px;
+      font-size: 16px; line-height: 1.9;
+      color: var(--text-muted); font-weight: 300;
+    }
+    .about-body p + p { margin-top: 16px; }
+
+    .about-stats {
+      margin-top: 48px;
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .stat-card {
+      background: var(--white);
+      border-radius: 16px; padding: 24px 20px;
+      text-align: center;
+      border: 1px solid var(--cream-dark);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .stat-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(26,39,68,0.1); }
+    .stat-num {
+      font-family: var(--font-heading);
+      font-size: 40px; font-weight: 900;
+      color: var(--sky); line-height: 1;
+    }
+    .stat-label {
+      font-size: 11px; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--text-muted);
+      margin-top: 6px; font-weight: 600;
+    }
+
+    /* ─── MENU ──────────────────────────────────────────── */
+    #menu {
+      background: var(--navy);
+      padding: 140px 60px;
+    }
+    .menu-header {
+      max-width: 1200px; margin: 0 auto 80px;
+      display: flex; align-items: flex-end; justify-content: space-between;
+    }
+    .menu-header .section-title { color: var(--white); }
+    .menu-header .section-title span { color: var(--sky); }
+    .menu-tabs {
+      display: flex; gap: 8px;
+    }
+    .menu-tab {
+      padding: 10px 24px;
+      border-radius: 50px;
+      font-family: var(--font-heading);
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      cursor: pointer; border: 1.5px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.5);
+      background: transparent;
+      transition: all 0.3s ease;
+    }
+    .menu-tab.active, .menu-tab:hover {
+      background: var(--sky);
+      border-color: var(--sky);
+      color: var(--navy);
+    }
+
+    .menu-grid {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+    .menu-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px; overflow: hidden;
+      transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+      cursor: pointer;
+    }
+    .menu-card:hover {
+      transform: translateY(-12px);
+      box-shadow: 0 40px 80px rgba(0,0,0,0.3);
+      background: rgba(255,255,255,0.08);
+    }
+    .menu-card-img {
+      width: 100%; height: 240px;
+      object-fit: cover; display: block;
+      transition: transform 0.6s ease;
+    }
+    .menu-card:hover .menu-card-img { transform: scale(1.06); }
+    .menu-card-body { padding: 28px; }
+    .menu-card-tag {
+      display: inline-block;
+      background: rgba(126,200,227,0.15);
+      color: var(--sky);
+      font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+      font-weight: 700; padding: 4px 12px; border-radius: 20px;
+      margin-bottom: 12px;
+    }
+    .menu-card-name {
+      font-family: var(--font-heading);
+      font-size: 22px; font-weight: 700;
+      color: var(--white); margin-bottom: 10px;
+    }
+    .menu-card-desc {
+      font-size: 13px; color: rgba(255,255,255,0.5);
+      line-height: 1.7; font-weight: 300;
+    }
+    .menu-card-footer {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-top: 24px; padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .menu-card-price {
+      font-family: var(--font-heading);
+      font-size: 26px; font-weight: 900;
+      color: var(--peach);
+    }
+    .menu-card-btn {
+      background: var(--sky);
+      color: var(--navy);
+      border: none; border-radius: 50px;
+      padding: 10px 22px;
+      font-family: var(--font-heading);
+      font-weight: 700; font-size: 11px;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      cursor: pointer;
+      transition: transform 0.3s, background 0.3s;
+    }
+    .menu-card-btn:hover { transform: scale(1.05); background: var(--sky-light); }
+
+    /* ─── PARALLAX DIVIDER ──────────────────────────────── */
+    .parallax-divider {
+      height: 500px; position: relative;
+      overflow: hidden;
+    }
+    .parallax-bg {
+      position: absolute; inset: -20%;
+      background-image: url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=1600&q=80');
+      background-size: cover; background-position: center;
+      will-change: transform;
+    }
+    .parallax-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(26,39,68,0.85) 0%, rgba(126,200,227,0.3) 100%);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 20px;
+    }
+    .parallax-quote {
+      font-family: var(--font-heading);
+      font-size: clamp(30px, 5vw, 64px);
+      font-weight: 900; text-transform: uppercase;
+      color: var(--white); text-align: center;
+      letter-spacing: -1px; line-height: 1;
+      max-width: 800px; padding: 0 40px;
+    }
+    .parallax-quote span { color: var(--sky); }
+    .parallax-sub {
+      font-size: 14px; color: rgba(255,255,255,0.7);
+      letter-spacing: 3px; text-transform: uppercase;
+      font-family: var(--font-light);
+    }
+
+    /* ─── GALLERY ───────────────────────────────────────── */
+    #gallery {
+      background: var(--cream);
+      padding: 140px 60px;
+    }
+    .gallery-header {
+      max-width: 1200px; margin: 0 auto 70px;
+      text-align: center;
+    }
+    .gallery-header .section-title { color: var(--navy); }
+    .gallery-header .section-title span { color: var(--sky); }
+    .gallery-header p {
+      margin-top: 16px; font-size: 16px;
+      color: var(--text-muted); font-weight: 300;
+    }
+
+    .gallery-masonry {
+      max-width: 1200px; margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: auto;
+      gap: 16px;
+    }
+    .gallery-item {
+      border-radius: 16px; overflow: hidden;
+      position: relative; cursor: pointer;
+    }
+    .gallery-item:nth-child(1) { grid-row: span 2; }
+    .gallery-item:nth-child(4) { grid-row: span 2; }
+
+    .gallery-item img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform 0.6s ease;
+      min-height: 220px;
+    }
+    .gallery-item:nth-child(1) img,
+    .gallery-item:nth-child(4) img { min-height: 460px; }
+
+    .gallery-item:hover img { transform: scale(1.08); }
+    .gallery-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(26,39,68,0.8) 0%, transparent 60%);
+      opacity: 0; transition: opacity 0.4s ease;
+      display: flex; align-items: flex-end; padding: 20px;
+    }
+    .gallery-item:hover .gallery-overlay { opacity: 1; }
+    .gallery-overlay-text {
+      font-family: var(--font-heading);
+      font-size: 14px; font-weight: 700;
+      color: var(--white); letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* ─── LOCATION ──────────────────────────────────────── */
+    #location {
+      background: var(--navy);
+      padding: 140px 60px;
+    }
+    .location-grid {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 80px; align-items: center;
+    }
+    .location-text .section-eyebrow { color: var(--sky); }
+    .location-text .section-title { color: var(--white); }
+    .location-text .section-title span { color: var(--sky); }
+
+    .location-info {
+      margin-top: 40px;
+      display: flex; flex-direction: column; gap: 28px;
+    }
+    .info-block { display: flex; gap: 18px; align-items: flex-start; }
+    .info-icon {
+      width: 48px; height: 48px;
+      background: rgba(126,200,227,0.12);
+      border: 1px solid rgba(126,200,227,0.2);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 20px;
+    }
+    .info-label {
+      font-size: 10px; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--sky);
+      font-weight: 700; margin-bottom: 4px;
+    }
+    .info-value {
+      font-family: var(--font-heading);
+      font-size: 18px; font-weight: 600;
+      color: var(--white); line-height: 1.4;
+    }
+    .info-value small {
+      display: block; font-size: 13px;
+      color: rgba(255,255,255,0.5); font-weight: 300;
+      font-family: var(--font-body); letter-spacing: 0;
+    }
+
+    .hours-grid {
+      margin-top: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+    }
+    .hours-row {
+      display: flex; justify-content: space-between;
+      font-size: 13px; color: rgba(255,255,255,0.6);
+    }
+    .hours-row .day { color: rgba(255,255,255,0.4); }
+    .hours-row.today .day,
+    .hours-row.today .time { color: var(--sky); font-weight: 600; }
+    .hours-row.closed .time { color: rgba(255,255,255,0.3); }
+
+    .location-map-wrap {
+      border-radius: 24px; overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+      position: relative;
+    }
+    .location-map-wrap iframe {
+      width: 100%; height: 480px; border: none; display: block;
+    }
+    .map-cta {
+      position: absolute; bottom: 24px; left: 50%;
+      transform: translateX(-50%);
+      background: var(--peach);
+      color: var(--white);
+      padding: 14px 32px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-family: var(--font-heading);
+      font-weight: 700; font-size: 12px;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      transition: transform 0.3s, background 0.3s;
+      white-space: nowrap;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+    .map-cta:hover { transform: translateX(-50%) translateY(-4px); background: var(--peach-dark); }
+
+    /* ─── CONTACT CTA ───────────────────────────────────── */
+    #contact {
+      background: var(--sky);
+      padding: 120px 60px;
+      text-align: center;
+    }
+    .contact-inner { max-width: 700px; margin: 0 auto; }
+    .contact-title {
+      font-family: var(--font-heading);
+      font-size: clamp(40px, 6vw, 80px);
+      font-weight: 900; text-transform: uppercase;
+      color: var(--navy); line-height: 0.95;
+      letter-spacing: -1px;
+    }
+    .contact-sub {
+      margin-top: 20px; font-size: 16px;
+      color: var(--navy-mid); opacity: 0.8; line-height: 1.7;
+    }
+    .contact-actions {
+      margin-top: 48px;
+      display: flex; align-items: center; justify-content: center; gap: 16px;
+    }
+    .btn-dark {
+      background: var(--navy);
+      color: var(--white);
+      padding: 18px 44px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-family: var(--font-heading);
+      font-weight: 700; font-size: 14px;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      transition: transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 10px 30px rgba(26,39,68,0.3);
+    }
+    .btn-dark:hover { transform: translateY(-4px); box-shadow: 0 20px 50px rgba(26,39,68,0.4); }
+
+    .btn-ghost-dark {
+      color: var(--navy);
+      padding: 18px 44px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-family: var(--font-heading);
+      font-weight: 600; font-size: 14px;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      border: 2px solid rgba(26,39,68,0.3);
+      transition: transform 0.3s, border-color 0.3s, background 0.3s;
+    }
+    .btn-ghost-dark:hover {
+      transform: translateY(-4px);
+      border-color: var(--navy);
+      background: rgba(26,39,68,0.08);
+    }
+
+    /* Cloud float deco in contact */
+    .contact-cloud-deco {
+      position: absolute; top: -30px; right: 10%;
+      opacity: 0.15; animation: floatSlow 6s ease-in-out infinite;
+    }
+
+    /* ─── FOOTER ────────────────────────────────────────── */
+    footer {
+      background: var(--navy);
+      padding: 80px 60px 40px;
+    }
+    .footer-grid {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 60px; padding-bottom: 60px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .footer-brand .nav-logo-text span:first-child { color: var(--white); font-size: 24px; }
+    .footer-brand .nav-logo-text span:last-child { color: rgba(255,255,255,0.4); }
+    .footer-tagline {
+      margin-top: 16px; font-size: 14px;
+      color: rgba(255,255,255,0.45); line-height: 1.8; max-width: 280px;
+    }
+    .footer-social {
+      margin-top: 28px; display: flex; gap: 12px;
+    }
+    .social-link {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.12);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.5);
+      text-decoration: none; font-size: 16px;
+      transition: all 0.3s;
+    }
+    .social-link:hover {
+      background: var(--sky); border-color: var(--sky); color: var(--navy);
+    }
+    .footer-col h4 {
+      font-family: var(--font-heading);
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--sky); margin-bottom: 20px;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li + li { margin-top: 12px; }
+    .footer-col ul a {
+      text-decoration: none; font-size: 14px;
+      color: rgba(255,255,255,0.45);
+      transition: color 0.3s;
+    }
+    .footer-col ul a:hover { color: var(--white); }
+    .footer-bottom {
+      max-width: 1200px; margin: 0 auto;
+      padding-top: 32px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-bottom p {
+      font-size: 12px; color: rgba(255,255,255,0.25);
+    }
+    .footer-bottom .footer-heart { color: var(--peach); }
+
+    /* ─── CURSOR ────────────────────────────────────────── */
+    .cursor, .cursor-follower {
+      position: fixed; pointer-events: none;
+      border-radius: 50%; z-index: 9999;
+      mix-blend-mode: difference;
+    }
+    .cursor {
+      width: 10px; height: 10px;
+      background: var(--sky);
+      transform: translate(-50%, -50%);
+      transition: transform 0.05s;
+    }
+    .cursor-follower {
+      width: 36px; height: 36px;
+      border: 1.5px solid var(--sky);
+      transform: translate(-50%, -50%);
+      opacity: 0.5;
+      transition: transform 0.15s ease, width 0.3s, height 0.3s, opacity 0.3s;
+    }
+    body.cursor-hover .cursor-follower {
+      width: 60px; height: 60px; opacity: 0.3;
+    }
+
+    /* ─── MOBILE ────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 16px 24px; }
+      nav.scrolled { padding: 12px 24px; }
+      .nav-links { display: none; }
+      #about, #menu, #gallery, #location, #contact { padding: 80px 24px; }
+      footer { padding: 60px 24px 30px; }
+      .about-grid, .location-grid { grid-template-columns: 1fr; gap: 48px; }
+      .about-img-float, .about-badge { display: none; }
+      .menu-grid { grid-template-columns: 1fr; }
+      .menu-header { flex-direction: column; align-items: flex-start; gap: 24px; }
+      .gallery-masonry { grid-template-columns: repeat(2, 1fr); }
+      .gallery-item:nth-child(1), .gallery-item:nth-child(4) { grid-row: auto; }
+      .gallery-item:nth-child(1) img, .gallery-item:nth-child(4) img { min-height: 220px; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+      .hero-actions { flex-direction: column; }
+      .contact-actions { flex-direction: column; }
+      .cursor, .cursor-follower { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CURSOR -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-follower" id="cursorFollower"></div>
+
+  <!-- LOADER -->
+  <div id="loader">
+    <div class="loader-cloud">
+      <svg viewBox="0 0 200 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="100" cy="80" rx="90" ry="45" fill="#7EC8E3"/>
+        <circle cx="60" cy="75" r="35" fill="#7EC8E3"/>
+        <circle cx="100" cy="60" r="45" fill="#7EC8E3"/>
+        <circle cx="145" cy="72" r="32" fill="#7EC8E3"/>
+        <ellipse cx="100" cy="95" rx="88" ry="20" fill="#A8D8EA"/>
+      </svg>
+      <div class="loader-text">
+        KUMO
+        <span class="loader-sub">crepe with a soul</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <a href="#hero" class="nav-logo">
+      <svg class="nav-logo-cloud" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="60" cy="52" rx="54" ry="27" fill="#7EC8E3"/>
+        <circle cx="36" cy="48" r="22" fill="#7EC8E3"/>
+        <circle cx="60" cy="36" r="28" fill="#7EC8E3"/>
+        <circle cx="88" cy="46" r="20" fill="#7EC8E3"/>
+        <ellipse cx="60" cy="60" rx="52" ry="12" fill="#A8D8EA"/>
+      </svg>
+      <div class="nav-logo-text">
+        <span>KUMO</span>
+        <span>crepe with a soul</span>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#menu">Menu</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#location">Visit</a></li>
+      <li><a href="https://www.toasttab.com/kumo-crepe" target="_blank" class="nav-cta">Order Now</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <!-- Floating cloud shapes -->
+    <div class="hero-cloud-bg hc1"></div>
+    <div class="hero-cloud-bg hc2"></div>
+    <div class="hero-cloud-bg hc3"></div>
+    <div class="hero-cloud-bg hc4"></div>
+    <!-- Particles -->
+    <div class="particles" id="particles"></div>
+
+    <div class="hero-content">
+      <div class="hero-eyebrow">San Marcos, Texas</div>
+      <h1 class="hero-title">
+        Crepe<br>
+        <span class="sky-word">With A</span>
+        Soul
+      </h1>
+      <p class="hero-sub">
+        French-inspired crepes &amp; specialty beverages,<br>
+        crafted with love in the heart of San Marcos.
+      </p>
+      <div class="hero-actions">
+        <a href="https://www.toasttab.com/kumo-crepe" target="_blank" class="btn-primary">Order Now</a>
+        <a href="#menu" class="btn-outline">Explore Menu</a>
+      </div>
+    </div>
+
+    <!-- Big cloud deco -->
+    <div class="hero-cloud-deco">
+      <svg width="600" height="380" viewBox="0 0 600 380" fill="none">
+        <ellipse cx="300" cy="240" rx="270" ry="135" fill="#7EC8E3"/>
+        <circle cx="160" cy="220" r="110" fill="#7EC8E3"/>
+        <circle cx="300" cy="170" r="140" fill="#7EC8E3"/>
+        <circle cx="445" cy="215" r="100" fill="#7EC8E3"/>
+      </svg>
+    </div>
+
+    <div class="hero-scroll-hint">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-strip">
+    <div class="marquee-track" id="marqueeTrack">
+      <!-- duplicated for seamless loop -->
+      <span class="marquee-item">French Crepes <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Specialty Drinks <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Kumo Crepe <span class="marquee-dot"></span></span>
+      <span class="marquee-item">San Marcos TX <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Open Tue–Sat <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Crepe With A Soul <span class="marquee-dot"></span></span>
+      <span class="marquee-item">French Crepes <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Specialty Drinks <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Kumo Crepe <span class="marquee-dot"></span></span>
+      <span class="marquee-item">San Marcos TX <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Open Tue–Sat <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Crepe With A Soul <span class="marquee-dot"></span></span>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about-grid">
+      <div class="about-image-wrap reveal-left">
+        <img
+          src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80"
+          alt="Crepe being made"
+          class="about-img-main"
+        />
+        <img
+          src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&q=80"
+          alt="Specialty drink"
+          class="about-img-float"
+        />
+        <div class="about-badge">
+          <span class="about-badge-num">5★</span>
+          <span class="about-badge-txt">Rated</span>
+        </div>
+      </div>
+      <div class="about-text">
+        <p class="section-eyebrow reveal">Our Story</p>
+        <h2 class="section-title reveal delay-1">
+          More Than<br>
+          Just A <span>Crepe</span>
+        </h2>
+        <div class="about-body reveal delay-2">
+          <p>
+            Kumo — the Japanese word for "cloud" — was born from a dream to bring
+            something light, delicate, and soulful to San Marcos. Our crepes are
+            crafted with French technique, local ingredients, and a whole lot of heart.
+          </p>
+          <p>
+            Whether you're here for a sweet Nutella fold, a savory breakfast wrap, or
+            one of our signature specialty drinks, every bite and sip is made to be
+            a moment worth savoring.
+          </p>
+        </div>
+        <div class="about-stats">
+          <div class="stat-card reveal-scale delay-2">
+            <div class="stat-num">50+</div>
+            <div class="stat-label">Menu Items</div>
+          </div>
+          <div class="stat-card reveal-scale delay-3">
+            <div class="stat-num">5★</div>
+            <div class="stat-label">Reviews</div>
+          </div>
+          <div class="stat-card reveal-scale delay-4">
+            <div class="stat-num">TX</div>
+            <div class="stat-label">San Marcos</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MENU -->
+  <section id="menu">
+    <div class="menu-header reveal">
+      <div>
+        <p class="section-eyebrow" style="color:var(--sky)">What We Offer</p>
+        <h2 class="section-title" style="color:var(--white)">Our <span style="color:var(--sky)">Menu</span></h2>
+      </div>
+      <div class="menu-tabs">
+        <button class="menu-tab active">Crepes</button>
+        <button class="menu-tab">Drinks</button>
+        <button class="menu-tab">Combos</button>
+      </div>
+    </div>
+
+    <div class="menu-grid">
+      <!-- Card 1 -->
+      <div class="menu-card reveal delay-1">
+        <img
+          src="https://images.unsplash.com/photo-1519676867240-f03562e64548?w=600&q=80"
+          alt="Nutella Crepe"
+          class="menu-card-img"
+        />
+        <div class="menu-card-body">
+          <span class="menu-card-tag">Sweet</span>
+          <div class="menu-card-name">Nutella Dream</div>
+          <div class="menu-card-desc">Warm crepe folded with rich Nutella, fresh strawberries, and a dusting of powdered sugar.</div>
+          <div class="menu-card-footer">
+            <div class="menu-card-price">$9</div>
+            <button class="menu-card-btn">Add to Order</button>
+          </div>
+        </div>
+      </div>
+      <!-- Card 2 -->
+      <div class="menu-card reveal delay-2">
+        <img
+          src="https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=600&q=80"
+          alt="Savory Crepe"
+          class="menu-card-img"
+        />
+        <div class="menu-card-body">
+          <span class="menu-card-tag">Savory</span>
+          <div class="menu-card-name">Morning Cloud</div>
+          <div class="menu-card-desc">Ham, gruyère, and a perfectly runny egg wrapped in a golden buckwheat crepe.</div>
+          <div class="menu-card-footer">
+            <div class="menu-card-price">$11</div>
+            <button class="menu-card-btn">Add to Order</button>
+          </div>
+        </div>
+      </div>
+      <!-- Card 3 -->
+      <div class="menu-card reveal delay-3">
+        <img
+          src="https://images.unsplash.com/photo-1541614101331-1a5a3a194e92?w=600&q=80"
+          alt="Specialty Drink"
+          class="menu-card-img"
+        />
+        <div class="menu-card-body">
+          <span class="menu-card-tag">Signature Drink</span>
+          <div class="menu-card-name">Sky Latte</div>
+          <div class="menu-card-desc">Our signature butterfly pea latte — a color-changing cloud in a cup, topped with vanilla foam.</div>
+          <div class="menu-card-footer">
+            <div class="menu-card-price">$7</div>
+            <button class="menu-card-btn">Add to Order</button>
+          </div>
+        </div>
+      </div>
+      <!-- Card 4 -->
+      <div class="menu-card reveal delay-2">
+        <img
+          src="https://images.unsplash.com/photo-1464305795204-6f5bbfc7fb81?w=600&q=80"
+          alt="Matcha Crepe"
+          class="menu-card-img"
+        />
+        <div class="menu-card-body">
+          <span class="menu-card-tag">Sweet</span>
+          <div class="menu-card-name">Matcha Bliss</div>
+          <div class="menu-card-desc">Premium matcha cream, mochi, and red bean paste tucked inside a delicate crepe.</div>
+          <div class="menu-card-footer">
+            <div class="menu-card-price">$10</div>
+            <button class="menu-card-btn">Add to Order</button>
+          </div>
+        </div>
+      </div>
+      <!-- Card 5 -->
+      <div class="menu-card reveal delay-3">
+        <img
+          src="https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=600&q=80"
+          alt="Fruit Crepe"
+          class="menu-card-img"
+        />
+        <div class="menu-card-body">
+          <span class="menu-card-tag">Sweet</span>
+          <div class="menu-card-name">Berry Cloud</div>
+          <div class="menu-card-desc">Fresh mixed berries, whipped mascarpone, honey drizzle on a classic French crepe.</div>
+          <div class="menu-card-footer">
+            <div class="menu-card-price">$9</div>
+            <button class="menu-card-btn">Add to Order</button>
+          </div>
+        </div>
+      </div>
+      <!-- Card 6 -->
+      <div class="menu-card reveal delay-4">
+        <img
+          src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80"
+          alt="Coffee Drink"
+          class="menu-card-img"
+        />
+        <div class="menu-card-body">
+          <span class="menu-card-tag">Specialty Drink</span>
+          <div class="menu-card-name">Cloud Mocha</div>
+          <div class="menu-card-desc">Espresso meets velvet chocolate, topped with sky-blue cotton candy cloud foam.</div>
+          <div class="menu-card-footer">
+            <div class="menu-card-price">$7</div>
+            <button class="menu-card-btn">Add to Order</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARALLAX DIVIDER -->
+  <div class="parallax-divider">
+    <div class="parallax-bg" id="parallaxBg"></div>
+    <div class="parallax-overlay">
+      <div class="parallax-quote reveal">
+        Every Crepe Tells<br><span>A Story</span>
+      </div>
+      <p class="parallax-sub reveal delay-2">Handcrafted · French-inspired · San Marcos, TX</p>
+    </div>
+  </div>
+
+  <!-- GALLERY -->
+  <section id="gallery">
+    <div class="gallery-header">
+      <p class="section-eyebrow reveal">Visual Bites</p>
+      <h2 class="section-title reveal delay-1">Life At <span>Kumo</span></h2>
+      <p class="reveal delay-2">A peek inside our world — food, drinks, and good vibes.</p>
+    </div>
+
+    <div class="gallery-masonry">
+      <div class="gallery-item reveal-scale">
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" alt="Crepe Making" />
+        <div class="gallery-overlay"><span class="gallery-overlay-text">Crepe Crafting</span></div>
+      </div>
+      <div class="gallery-item reveal-scale delay-1">
+        <img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=600&q=80" alt="Specialty Drinks" />
+        <div class="gallery-overlay"><span class="gallery-overlay-text">Specialty Drinks</span></div>
+      </div>
+      <div class="gallery-item reveal-scale delay-2">
+        <img src="https://images.unsplash.com/photo-1464305795204-6f5bbfc7fb81?w=600&q=80" alt="Sweet Crepes" />
+        <div class="gallery-overlay"><span class="gallery-overlay-text">Sweet Treats</span></div>
+      </div>
+      <div class="gallery-item reveal-scale delay-1">
+        <img src="https://images.unsplash.com/photo-1519676867240-f03562e64548?w=600&q=80" alt="Nutella Crepe" />
+        <div class="gallery-overlay"><span class="gallery-overlay-text">Nutella Dream</span></div>
+      </div>
+      <div class="gallery-item reveal-scale delay-3">
+        <img src="https://images.unsplash.com/photo-1541614101331-1a5a3a194e92?w=600&q=80" alt="Latte Art" />
+        <div class="gallery-overlay"><span class="gallery-overlay-text">Sky Latte</span></div>
+      </div>
+      <div class="gallery-item reveal-scale delay-4">
+        <img src="https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=600&q=80" alt="Berry Crepe" />
+        <div class="gallery-overlay"><span class="gallery-overlay-text">Berry Cloud</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOCATION -->
+  <section id="location">
+    <div class="location-grid">
+      <div class="location-text">
+        <p class="section-eyebrow reveal">Find Us</p>
+        <h2 class="section-title reveal delay-1" style="color:var(--white)">Come <span>Visit</span><br>Us Today</h2>
+        <div class="location-info">
+          <div class="info-block reveal delay-2">
+            <div class="info-icon">📍</div>
+            <div>
+              <div class="info-label">Address</div>
+              <div class="info-value">
+                312 University Drive
+                <small>San Marcos, Texas 78666</small>
+              </div>
+            </div>
+          </div>
+          <div class="info-block reveal delay-3">
+            <div class="info-icon">🕐</div>
+            <div>
+              <div class="info-label">Hours</div>
+              <div class="info-value">
+                <div class="hours-grid">
+                  <div class="hours-row closed"><span class="day">Mon</span><span class="time">Closed</span></div>
+                  <div class="hours-row today"><span class="day">Tue</span><span class="time">11am–9pm</span></div>
+                  <div class="hours-row"><span class="day">Wed</span><span class="time">11am–9pm</span></div>
+                  <div class="hours-row"><span class="day">Thu</span><span class="time">11am–9pm</span></div>
+                  <div class="hours-row"><span class="day">Fri</span><span class="time">11am–9pm</span></div>
+                  <div class="hours-row"><span class="day">Sat</span><span class="time">11am–9pm</span></div>
+                  <div class="hours-row closed"><span class="day">Sun</span><span class="time">Closed</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="info-block reveal delay-4">
+            <div class="info-icon">📞</div>
+            <div>
+              <div class="info-label">Phone</div>
+              <div class="info-value"><a href="tel:5128553255" style="color:inherit;text-decoration:none;">512-855-3255</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="location-map-wrap reveal-right">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3454.0!2d-97.93838!3d29.88555!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x865cac8e5da5d3b5%3A0x0!2s312+University+Dr%2C+San+Marcos%2C+TX+78666!5e0!3m2!1sen!2sus!4v1"
+          allowfullscreen="" loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Kumo Crepe location"
+        ></iframe>
+        <a href="https://maps.google.com/?q=312+University+Dr,+San+Marcos,+TX+78666" target="_blank" class="map-cta">
+          Get Directions
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT CTA -->
+  <section id="contact">
+    <div class="contact-cloud-deco">
+      <svg width="300" height="180" viewBox="0 0 300 180" fill="none">
+        <ellipse cx="150" cy="110" rx="135" ry="67" fill="white"/>
+        <circle cx="80" cy="105" r="55" fill="white"/>
+        <circle cx="150" cy="80" r="70" fill="white"/>
+        <circle cx="225" cy="102" r="50" fill="white"/>
+      </svg>
+    </div>
+    <div class="contact-inner">
+      <h2 class="contact-title reveal">Ready To<br>Order?</h2>
+      <p class="contact-sub reveal delay-1">
+        Skip the wait — order online for pickup and have your dream crepe ready when you arrive.
+      </p>
+      <div class="contact-actions reveal delay-2">
+        <a href="https://www.toasttab.com/kumo-crepe" target="_blank" class="btn-dark">Order Online</a>
+        <a href="tel:5128553255" class="btn-ghost-dark">Call Us</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#hero" class="nav-logo" style="text-decoration:none;">
+          <svg class="nav-logo-cloud" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="60" cy="52" rx="54" ry="27" fill="#7EC8E3"/>
+            <circle cx="36" cy="48" r="22" fill="#7EC8E3"/>
+            <circle cx="60" cy="36" r="28" fill="#7EC8E3"/>
+            <circle cx="88" cy="46" r="20" fill="#7EC8E3"/>
+            <ellipse cx="60" cy="60" rx="52" ry="12" fill="#A8D8EA"/>
+          </svg>
+          <div class="nav-logo-text">
+            <span>KUMO</span>
+            <span>crepe with a soul</span>
+          </div>
+        </a>
+        <p class="footer-tagline">
+          French-inspired crepes and specialty beverages crafted with love in the heart of San Marcos, Texas.
+        </p>
+        <div class="footer-social">
+          <a href="#" class="social-link" aria-label="Instagram">&#x1F4F7;</a>
+          <a href="#" class="social-link" aria-label="Facebook">&#x1F426;</a>
+          <a href="#" class="social-link" aria-label="TikTok">&#x1F3B5;</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Menu</h4>
+        <ul>
+          <li><a href="#menu">Sweet Crepes</a></li>
+          <li><a href="#menu">Savory Crepes</a></li>
+          <li><a href="#menu">Specialty Drinks</a></li>
+          <li><a href="#menu">Combos</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Visit</h4>
+        <ul>
+          <li><a href="#location">Find Us</a></li>
+          <li><a href="#location">Hours</a></li>
+          <li><a href="tel:5128553255">Call Us</a></li>
+          <li><a href="https://www.toasttab.com/kumo-crepe" target="_blank">Order Online</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Follow</h4>
+        <ul>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Facebook</a></li>
+          <li><a href="#">TikTok</a></li>
+          <li><a href="#">Google Reviews</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Kumo Crepe. All rights reserved.</p>
+      <p>Made with <span class="footer-heart">♥</span> in San Marcos, TX</p>
+    </div>
+  </footer>
+
+  <script>
+    // ─── LOADER ──────────────────────────────────────────
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('loader').classList.add('hidden');
+      }, 1200);
+    });
+
+    // ─── CUSTOM CURSOR ───────────────────────────────────
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('cursorFollower');
+    let mouseX = 0, mouseY = 0;
+    let followerX = 0, followerY = 0;
+
+    document.addEventListener('mousemove', e => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cursor.style.left = mouseX + 'px';
+      cursor.style.top  = mouseY + 'px';
+    });
+
+    function animateFollower() {
+      followerX += (mouseX - followerX) * 0.12;
+      followerY += (mouseY - followerY) * 0.12;
+      follower.style.left = followerX + 'px';
+      follower.style.top  = followerY + 'px';
+      requestAnimationFrame(animateFollower);
+    }
+    animateFollower();
+
+    document.querySelectorAll('a, button, .menu-card, .gallery-item').forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+    });
+
+    // ─── NAV SCROLL ──────────────────────────────────────
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // ─── PARTICLES ───────────────────────────────────────
+    const particlesContainer = document.getElementById('particles');
+    for (let i = 0; i < 25; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.animationDuration = (8 + Math.random() * 16) + 's';
+      p.style.animationDelay = (-Math.random() * 20) + 's';
+      p.style.width = (2 + Math.random() * 4) + 'px';
+      p.style.height = p.style.width;
+      p.style.opacity = Math.random() * 0.6;
+      particlesContainer.appendChild(p);
+    }
+
+    // ─── PARALLAX ────────────────────────────────────────
+    const parallaxBg = document.getElementById('parallaxBg');
+    function updateParallax() {
+      if (!parallaxBg) return;
+      const rect = parallaxBg.parentElement.getBoundingClientRect();
+      const scrolled = -rect.top;
+      const rate = 0.35;
+      parallaxBg.style.transform = `translateY(${scrolled * rate}px)`;
+    }
+    window.addEventListener('scroll', updateParallax, { passive: true });
+
+    // ─── REVEAL ON SCROLL ────────────────────────────────
+    const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    revealEls.forEach(el => observer.observe(el));
+
+    // ─── MENU TABS ───────────────────────────────────────
+    document.querySelectorAll('.menu-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        // In a real implementation this would filter menu items
+        // For demo, just re-trigger card animations
+        document.querySelectorAll('.menu-card').forEach((card, i) => {
+          card.style.opacity = '0';
+          card.style.transform = 'translateY(30px)';
+          setTimeout(() => {
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+          }, i * 80);
+        });
+      });
+    });
+
+    // ─── SMOOTH SCROLL ───────────────────────────────────
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+
+    // ─── COUNTER ANIMATION ───────────────────────────────
+    function animateCounter(el, target, suffix = '') {
+      let current = 0;
+      const step = Math.ceil(target / 40);
+      const timer = setInterval(() => {
+        current = Math.min(current + step, target);
+        el.textContent = current + suffix;
+        if (current >= target) clearInterval(timer);
+      }, 40);
+    }
+
+    const statObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const num = entry.target.querySelector('.stat-num');
+          if (num && !num.dataset.animated) {
+            num.dataset.animated = true;
+            const txt = num.textContent;
+            if (txt.includes('+')) animateCounter(num, parseInt(txt), '+');
+          }
+        }
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.stat-card').forEach(el => statObserver.observe(el));
+  </script>
+</body>
+</html>
